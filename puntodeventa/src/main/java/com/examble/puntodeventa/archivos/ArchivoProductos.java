@@ -4,20 +4,21 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.doubles.A;
-
 import com.examble.puntodeventa.modelos.Productos;
 
 public class ArchivoProductos {
     private static final String RUTA = "productos.txt";
 
     public static List<Productos> cargarProductos() {
-        List<Productos> lista = new ArrayList<>():
+        List<Productos> lista = new ArrayList<>();
+        File file = new File(RUTA);
 
         //Si el archivo no existe, crea datos de ejemplo automáticamente (Requisito)
         if (!file.exists()) {
             crearDatosEjemplo();
         }
+
+        return lista;
     }
 
     public static void guardarProductos(List<Productos> lista) {
