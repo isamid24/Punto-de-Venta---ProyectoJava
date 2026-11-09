@@ -1,13 +1,13 @@
 package com.examble.puntodeventa.modelos;
 
-public class productos {
+public class Productos {
     private String codigo;
     private String nombre;
     private double precio;
     private int stock;
 
-    public productos() {
-        public productos(String codigo, String nombre, double precio, int stock){
+    public Productos() {}
+        public Productos(String codigo, String nombre, double precio, int stock){
             this.codigo = codigo;
             this.nombre = nombre;
             this.precio = precio;
@@ -17,18 +17,26 @@ public class productos {
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) {this.codigo = codigo; }
 
-    public String getNombre() { return codigo; }
+    public String getNombre() { return nombre; }
     public void setNombre(String nombre) {this.nombre = nombre; }
 
-    public String getPrecio() { return codigo; }
-    public void setPrecio(String precio) {this.precio = precio; }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) {this.precio = precio; }
+
+    public int getStock() { return stock; }
+    public void setStock(int stock) {this.stock = stock; }
 
 
-    //Convertirlo a un formato delimitado por un "|"
+    //Convertirlo a un formato dselimitado por un "|"
     public String aLineaTxt() {
         return codigo + "|" + nombre + "|" + precio + "|" + stock;
     }
 
+    //Convierte el texto de una línea en un objeto producto
+    public static Productos desdeLineaTxt(String linea) {
+        String[] p = linea.split("\\|");
+        if (p.length < 4) return null;
+        return new Productos(p[0].trim(), p[1].trim(), Double.parseDouble(p[2].trim()), Integer.parseInt(p[3].trim()));
     }
 
     
