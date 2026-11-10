@@ -8,7 +8,7 @@ public class LineaVenta {
     public LineaVenta(Productos producto, int cantidad) {
             this.producto = producto;
             this.cantidad = cantidad;
-            this.subtotal = Double.parseDouble(producto.getPrecio()) * cantidad;
+            this.subtotal = producto.getPrecio() * cantidad;
         }
     
     public Productos getProducto() { return producto; }
@@ -16,7 +16,7 @@ public class LineaVenta {
     public int getCantidad() {return cantidad; }
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
-        this.subtotal = Double.parseDouble(producto.getPrecio()) * cantidad;
+        this.subtotal = producto.getPrecio() * cantidad;
     }
 
     public double getSubtotal() { return subtotal; }

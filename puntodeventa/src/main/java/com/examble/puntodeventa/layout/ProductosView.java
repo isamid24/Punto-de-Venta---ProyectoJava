@@ -19,10 +19,10 @@ import com.vaadin.flow.router.Route;
 
 import java.util.List;
 
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.ints.H;
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.ints.IntIterators.n;
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.objects.v;
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.shorts.h;
+//import org.jetbrains.kotlin.it.unimi.dsi.fastutil.ints.H;
+//import org.jetbrains.kotlin.it.unimi.dsi.fastutil.ints.IntIterators.n;
+//import org.jetbrains.kotlin.it.unimi.dsi.fastutil.objects.v;
+//import org.jetbrains.kotlin.it.unimi.dsi.fastutil.shorts.h;
 
 @PageTitle("Productos | POS")
 @Route(value = "productos", layout = MainLayout.class)
@@ -42,7 +42,7 @@ public class ProductosView extends VerticalLayout {
     public ProductosView() {
         setSizeFull();
         listaProductos = ArchivoProductos.cargarProductos();
-        H2 título = new H2("Gestión del catálogo de Productos");
+        H2 titulo = new H2("Gestión del catálogo de Productos");
 
         //Configuración de búsqueda en tiempo real
         txtFiltro.setPlaceholder("Buscar por nombre o código...");
@@ -61,7 +61,7 @@ public class ProductosView extends VerticalLayout {
 
         //Formulario
         FormLayout form = new FormLayout(txtCodigo, txtNombre, txtPrecio, txtStock);
-        Button btnGuardar = new Button("Guardar / Actualizar", e -> guardarProductos());
+        Button btnGuardar = new Button("Guardar / Actualizar", e -> ArchivoProductos.guardarProductos(listaProductos));
         btnGuardar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         Button btnEliminar = new Button("Eliminar", e -> confirmarBorrado());
@@ -82,7 +82,7 @@ public class ProductosView extends VerticalLayout {
     private void actualizarGrid(){
         String filtro = txtFiltro.getValue().toLowerCase();
         List<Productos> filtrados = listaProductos.stream()
-        .filter(p -> p.getNombre().toLowerCase().contains(filtro) || p.getCodigo().toLowerCase().contains())
+        .filter(p -> p.getNombre().toLowerCase().contains(filtro) || p.getCodigo().toLowerCase().contains(filtro))
         .toList();
         grid.setItems(filtrados);
     }
