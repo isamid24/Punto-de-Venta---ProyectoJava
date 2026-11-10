@@ -59,22 +59,25 @@ public class VentaView extends VerticalLayout {
         Button btnAgregar = new Button("Agregar al carrito", e -> agregarAlCarrito());
         btnAgregar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        VerticalLayout paneIzquierdo = new VerticalLayout(
+        VerticalLayout panelIzquierdo = new VerticalLayout(
             new H2("Catálogo de Productos"),
             gridCatálogo,
             new HorizontalLayout(numCantidad, btnAgregar)
         );
-        paneIzquierdo.setSizeFull();
+        panelIzquierdo.setSizeFull();
 
 
         //Lado derecho: Carrito y Cobro
-        gridCarrito.addColumn(l -> l.getProducto().getNombre().setHeader("Producto"));
+        gridCarrito.addColumn(l -> l.getProducto().getNombre()).setHeader("Producto");
         gridCarrito.addColumn(LineaVenta::getCantidad).setHeader("Cant.");
         gridCarrito.addColumn(LineaVenta::getSubtotal).setHeader("Subtotal ($)");
         gridCarrito.setItems(carrito);
 
         Button btnQuitar = new Button ("Quitar Selección", e -> quitarDelCarrito());
         btnQuitar.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        Button btnCobrar = new Button("Cobrar Venta", e -> procesarCobro());
+        btnCobrar.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         VerticalLayout panelDerecho = new VerticalLayout(
             new H2("Carrito de Compras"),
@@ -85,10 +88,10 @@ public class VentaView extends VerticalLayout {
             lblCambio,
             btnCobrar
         );
-        paneIzquierdo.setSizeFull();
+        panelIzquierdo.setSizeFull();
 
         //Uso del componente SplitLayout
-        SplitLayout splitLayout = new SplitLayout(paneIzquierdo, paneIzquierdo);
+        SplitLayout splitLayout = new SplitLayout(panelIzquierdo, panelDerecho);
         splitLayout.setSizeFull();
         splitLayout.setSplitterPosition(55);
 
@@ -96,9 +99,14 @@ public class VentaView extends VerticalLayout {
 
     }
 
+    private void actualizarTotales() {
+    double total = calcularTotal();
+    lblTotal.setText("Total: $" + String.format("%.2f", total));
+    }
+
     private void agregarAlCarrito() {
         Productos seleccionado = gridCatálogo.asSingleSelect().getValue();
-        if (seleccionado = null) {
+        if (seleccionado == null) {
             Notification.show("Seleccione un producto del catálogo");
             return;
         }
@@ -128,9 +136,9 @@ public class VentaView extends VerticalLayout {
     }
 
     private void calcularCambio() {
-        double Total = calcularTotal();
+        double total = calcularTotal();
         double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
-        double Cambio = recibido - total;
+        double cambio = recibido - total;
         lblCambio.setText("Cambio: $" + String.format("%.2f", Math.max(0, cambio)));
 
     }
