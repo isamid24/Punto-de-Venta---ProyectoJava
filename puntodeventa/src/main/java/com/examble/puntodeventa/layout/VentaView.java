@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.kotlin.it.unimi.dsi.fastutil.chars.G;
+import org.jetbrains.kotlin.it.unimi.dsi.fastutil.longs.V;
+import org.jetbrains.kotlin.it.unimi.dsi.fastutil.objects.v;
 
 
 @PageTitle("Venta | POS")
@@ -49,5 +51,120 @@ public class VentaView extends VerticalLayout {
         gridCatálogo.addColumn(Productos::getPrecio).setHeader("Precio ($)");
         gridCatálogo.addColumn(Productos::getStock).setHeader("Stock");
         gridCatálogo.setItems(productos);
+
+        numCantidad.setValue(1.0);
+        numCantidad.setMin(1);
+        numCantidad.setStep(1);
+
+        Button btnAgregar = new Button("Agregar al carrito", e -> agregarAlCarrito());
+        btnAgregar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        VerticalLayout paneIzquierdo = new VerticalLayout(
+            new H2("Catálogo de Productos"),
+            gridCatálogo,
+            new HorizontalLayout(numCantidad, btnAgregar)
+        );
+        paneIzquierdo.setSizeFull();
+
+
+        //Lado derecho: Carrito y Cobro
+        gridCarrito.addColumn(l -> l.getProducto().getNombre().setHeader("Producto"));
+        gridCarrito.addColumn(LineaVenta::getCantidad).setHeader("Cant.");
+        gridCarrito.addColumn(LineaVenta::getSubtotal).setHeader("Subtotal ($)");
+        gridCarrito.setItems(carrito);
+
+        Button btnQuitar = new Button ("Quitar Selección", e -> quitarDelCarrito());
+        btnQuitar.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        VerticalLayout panelDerecho = new VerticalLayout(
+            new H2("Carrito de Compras"),
+            gridCarrito,
+            btnQuitar,
+            lblTotal,
+            numMontoRecibido,
+            lblCambio,
+            btnCobrar
+        );
+        paneIzquierdo.setSizeFull();
+
+        //Uso del componente SplitLayout
+        SplitLayout splitLayout = new SplitLayout(paneIzquierdo, paneIzquierdo);
+        splitLayout.setSizeFull();
+        splitLayout.setSplitterPosition(55);
+
+        add(splitLayout);
+
+    }
+
+    private void agregarAlCarrito() {
+        Productos seleccionado = gridCatálogo.asSingleSelect().getValue();
+        if (seleccionado = null) {
+            Notification.show("Seleccione un producto del catálogo");
+            return;
+        }
+
+        int cant = numCantidad.getValue().intValue();
+        if (cant > seleccionado.getStock()) {
+            Notification.show("No se puede vender más del stock disponible (" + seleccionado.getStock() + ")");
+            return;
+        }
+
+        carrito.add(new LineaVenta(seleccionado, cant));
+        gridCarrito.setItems(carrito);
+        actualizarTotales();
+    }
+    
+    private void quitarDelCarrito() {
+        LineaVenta seleccionada = gridCarrito.asSingleSelect().getValue();
+        if (seleccionada != null) {
+            carrito.remove(seleccionada);
+            gridCarrito.setItems(carrito);
+            actualizarTotales();
+        }
+    }
+
+    private double calcularTotal() {
+        return carrito.stream().mapToDouble(LineaVenta::getSubtotal).sum();
+    }
+
+    private void calcularCambio() {
+        double Total = calcularTotal();
+        double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
+        double Cambio = recibido - total;
+        lblCambio.setText("Cambio: $" + String.format("%.2f", Math.max(0, cambio)));
+
+    }
+
+    private void procesarCobro() {
+        if (carrito.isEmpty()) {
+            Notification.show("El carrito está vacío");
+            return ;
+        }
+        
+        double total = calcularTotal();
+        double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
+
+        if (recibido < total) {
+            Notification.show("El monto recibido es menor al total de la venta",3000, Notification.Position.MIDDLE);
+            return;
+        }
+
+        //Descuenta stock
+        for (LineaVenta lv : carrito) {
+            Productos p = lv.getProducto();
+            p.setStock(p.getStock() - lv.getCantidad());
+        }
+        ArchivoProductos.guardarProductos(productos);
+        gridCatálogo.setItems(productos);
+
+        Notification.show("¡Venta procesasda con éxito! Cambio: $" + String.format("%.2f", recibido - total));
+
+        //Limpiar para venta nueva
+        carrito.clear();
+        gridCarrito.setItems(carrito);
+        numMontoRecibido.clear();
+        actualizarTotales();
     }
 }
+
+
