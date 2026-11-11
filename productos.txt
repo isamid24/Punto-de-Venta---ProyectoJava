@@ -1,0 +1,6 @@
+P001|Leche Alquería 1L|4500.0|20
+P002|Pan Tajado Bimbo|6000.0|15
+P003|Café Sello Rojo 250g|8500.0|10
+P004|Arroz Roa 1Kg|4200.0|30
+P005|Gaseosa Coca-Cola 1.5L|5500.0|25
+P006|Alpinito|2700.0|12

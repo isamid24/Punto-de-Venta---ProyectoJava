@@ -95,11 +95,6 @@ public class VentaView extends VerticalLayout {
 
     }
 
-    private void actualizarTotales() {
-    double total = calcularTotal();
-    lblTotal.setText("Total: $" + String.format("%.2f", total));
-    }
-
     private void agregarAlCarrito() {
         Productos seleccionado = gridCatálogo.asSingleSelect().getValue();
         if (seleccionado == null) {
@@ -131,13 +126,17 @@ public class VentaView extends VerticalLayout {
         return carrito.stream().mapToDouble(LineaVenta::getSubtotal).sum();
     }
 
+    private void actualizarTotales() {
+        double total = calcularTotal();
+        lblTotal.setText("Total: $" + String.format("%.2f", total));
+        calcularCambio();
+    }
+
     private void calcularCambio() {
         double total = calcularTotal();
-        numMontoRecibido.addValueChangeListener(e -> calcularCambio());
         double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
         double cambio = recibido - total;
         lblCambio.setText("Cambio: $" + String.format("%.2f", Math.max(0, cambio)));
-
     }
 
     private void procesarCobro() {
