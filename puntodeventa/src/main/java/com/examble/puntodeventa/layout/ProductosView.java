@@ -40,6 +40,23 @@ public class ProductosView extends VerticalLayout {
 
         H2 titulo = new H2("Gestión del catálogo de Productos");
 
+        //Restricción para evitar letras/negativos
+        txtPrecio.setMin(0.01);
+        txtPrecio.setStep(0.01);
+        txtPrecio.setErrorMessage("Ingrese un precio válido mayor a 0");
+        txtPrecio.setHelperText("Solo números");
+
+
+        txtStock.setMin(1);
+        txtStock.setStep(1);
+        txtStock.setErrorMessage("Ingrese una cantidad entera positiva");
+
+        txtCodigo.setPattern("[Pp][0-9]{1,4}");
+        txtCodigo.setMaxLength(4);
+        txtCodigo.setHelperText("Formato: P seguido de números (Ej: P007)");
+
+        txtCodigo.setPattern("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*");
+        
         // Configuración de filtro de búsqueda
         txtFiltro.setPlaceholder("Buscar por nombre o código...");
         txtFiltro.setValueChangeMode(ValueChangeMode.LAZY);
@@ -108,6 +125,17 @@ public class ProductosView extends VerticalLayout {
                 return;
             }
 
+            // Valido que el  precio y stock sean mayores a cero
+            if (txtPrecio.getValue() <= 0) {
+                Notification.show("El precio debe ser mayor a 0", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            if (txtStock.getValue() <= 0) {
+                Notification.show("El stock debe ser al menos 1 unidad", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
             Productos nuevo = new Productos(
                 txtCodigo.getValue().trim(),
                 txtNombre.getValue().trim(),
@@ -116,6 +144,7 @@ public class ProductosView extends VerticalLayout {
             );
             listaProductos.add(nuevo);
             Notification.show("Producto " + nuevo.getNombre() + " agregado exitosamente");
+
         } else {
             productoSeleccionado.setNombre(txtNombre.getValue().trim());
             productoSeleccionado.setPrecio(txtPrecio.getValue());
@@ -125,8 +154,6 @@ public class ProductosView extends VerticalLayout {
 
         // Persistir en el archivo .txt
         ArchivoProductos.guardarProductos(listaProductos);
-
-        // Refrescar lista y limpiar campos
         limpiarFormulario();
         actualizarGrid();
     }

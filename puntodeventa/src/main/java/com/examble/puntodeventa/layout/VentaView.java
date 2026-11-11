@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -153,6 +154,20 @@ public class VentaView extends VerticalLayout {
             return;
         }
 
+        double cambio = recibido - total;
+
+        Notification notification = Notification.show("¡Venta procesada con éxito! Cambio: $" + String.format("%.2f", cambio));
+        notification.setPosition(Notification.Position.MIDDLE);
+        notification.setDuration(5000);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            
+        // Limpiar formulario y carrito tras la venta
+        carrito.clear();
+        gridCarrito.setItems(carrito);
+        numMontoRecibido.clear();
+        actualizarTotales();
+
+
         //Descuenta stock
         for (LineaVenta lv : carrito) {
             Productos p = lv.getProducto();
@@ -161,7 +176,6 @@ public class VentaView extends VerticalLayout {
         ArchivoProductos.guardarProductos(productos);
         gridCatálogo.setItems(productos);
 
-        Notification.show("¡Venta procesasda con éxito! Cambio: $" + String.format("%.2f", recibido - total));
 
         //Limpiar para venta nueva
         carrito.clear();
