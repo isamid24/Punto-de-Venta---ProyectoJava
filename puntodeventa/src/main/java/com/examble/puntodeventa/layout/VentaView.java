@@ -9,7 +9,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -141,47 +140,57 @@ public class VentaView extends VerticalLayout {
     }
 
     private void procesarCobro() {
-        if (carrito.isEmpty()) {
-            Notification.show("El carrito está vacío");
-            return ;
-        }
-        
-        double total = calcularTotal();
-        double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
+    if (carrito.isEmpty()) {
+        Notification.show("El carrito está vacío");
+        return;
+    }
 
-        if (recibido < total) {
-            Notification.show("El monto recibido es menor al total de la venta",3000, Notification.Position.MIDDLE);
-            return;
-        }
+    double total = calcularTotal();
+    double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
 
-        double cambio = recibido - total;
+    if (recibido < total) {
+        Notification.show("El monto recibido es menor al total", 3000, Notification.Position.MIDDLE);
+        return;
+    }
 
-        Notification notification = Notification.show("¡Venta procesada con éxito! Cambio: $" + String.format("%.2f", cambio));
-        notification.setPosition(Notification.Position.MIDDLE);
-        notification.setDuration(5000);
-        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            
-        // Limpiar formulario y carrito tras la venta
-        carrito.clear();
-        gridCarrito.setItems(carrito);
-        numMontoRecibido.clear();
-        actualizarTotales();
+    double cambio = recibido - total;
+
+    // Crear y guardar el registro de la venta en el archivo .txt
+    String idVenta = "V" + (System.currentTimeMillis() % 10000);
+    String fecha = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    String cliente = "Consumidor Final"; 
+
+    com.examble.puntodeventa.modelos.Venta nuevaVenta = 
+        new com.examble.puntodeventa.modelos.Venta(idVenta, fecha, cliente, total, recibido, cambio);
+    com.examble.puntodeventa.archivos.ArchivoVentas.agregarVenta(nuevaVenta);
+
+    // Notificación grande visual de éxito
+    Notification notification = Notification.show("¡Venta procesada con éxito! Cambio: $" + String.format("%.2f", cambio));
+    notification.setPosition(Notification.Position.MIDDLE);
+    notification.setDuration(5000);
+    notification.addThemeVariants(com.vaadin.flow.component.notification.NotificationVariant.LUMO_SUCCESS);
+
+    // Limpiar campos y carrito
+    carrito.clear();
+    gridCarrito.setItems(carrito);
+    numMontoRecibido.clear();
+    actualizarTotales();
 
 
-        //Descuenta stock
-        for (LineaVenta lv : carrito) {
-            Productos p = lv.getProducto();
-            p.setStock(p.getStock() - lv.getCantidad());
-        }
-        ArchivoProductos.guardarProductos(productos);
-        gridCatálogo.setItems(productos);
+    //Descuenta stock
+    for (LineaVenta lv : carrito) {
+        Productos p = lv.getProducto();
+        p.setStock(p.getStock() - lv.getCantidad());
+    }
+    ArchivoProductos.guardarProductos(productos);
+    gridCatálogo.setItems(productos);
 
 
-        //Limpiar para venta nueva
-        carrito.clear();
-        gridCarrito.setItems(carrito);
-        numMontoRecibido.clear();
-        actualizarTotales();
+    //Limpiar para venta nueva
+    carrito.clear();
+    gridCarrito.setItems(carrito);
+    numMontoRecibido.clear();
+    actualizarTotales();
     }
 }
 

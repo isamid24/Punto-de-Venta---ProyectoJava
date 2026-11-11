@@ -7,7 +7,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Historial | POS")
@@ -15,7 +15,7 @@ import java.util.List;
 public class HistorialView extends VerticalLayout {
 
     private Grid<Venta> grid = new Grid<>(Venta.class, false);
-    private List<Venta> listaVentas = new ArrayList<>();
+    private List<Venta> listaVentas = com.examble.puntodeventa.archivos.ArchivoVentas.cargarVentas();
 
     public HistorialView() {
         setSizeFull();

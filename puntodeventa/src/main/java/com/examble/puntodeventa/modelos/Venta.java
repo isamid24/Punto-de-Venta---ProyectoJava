@@ -3,6 +3,8 @@ package com.examble.puntodeventa.modelos;
 import java.util.ArrayList;
 import java.util.List;
 
+//import org.jetbrains.kotlin.it.unimi.dsi.fastutil.longs.V;
+
 
 public class Venta {
     private String idVenta;
@@ -16,7 +18,7 @@ public class Venta {
 
     public Venta() {}
     public Venta(String idVenta, String fechaHora, String clienteCedula, double total, double montoRecibido, double cambio) {
-             this.idVenta = idVenta;
+            this.idVenta = idVenta;
             this.fechaHora = fechaHora;
             this.clienteCedula = clienteCedula;
             this.total = total;
@@ -50,6 +52,14 @@ public class Venta {
     //Si el cliente no dio su cédula, guarda la palabra "GENERAL"; de lo contrario, guarda el número ingresado.
     public String aLineaTxt() {
         return idVenta + "|" + fechaHora + "|" + (clienteCedula.isEmpty() ? "GENERAL" : clienteCedula) + "|" + total + "|" + montoRecibido + "|" + cambio;
+    }
+
+    public static Venta desdeLineaTxt(String linea) {
+        String[] p = linea.split("\\|");
+        if (p.length >= 6) {
+            return new Venta(p[0], p[1], p[2], Double.parseDouble(p[3]), Double.parseDouble(p[4]), Double.parseDouble(p[5]));
+        }
+        return null;
     }
 
 }
