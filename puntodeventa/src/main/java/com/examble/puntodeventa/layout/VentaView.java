@@ -13,16 +13,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextField;
+//import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.chars.G;
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.longs.V;
-import org.jetbrains.kotlin.it.unimi.dsi.fastutil.objects.v;
 
 
 @PageTitle("Venta | POS")
@@ -137,6 +133,7 @@ public class VentaView extends VerticalLayout {
 
     private void calcularCambio() {
         double total = calcularTotal();
+        numMontoRecibido.addValueChangeListener(e -> calcularCambio());
         double recibido = numMontoRecibido.getValue() != null ? numMontoRecibido.getValue() : 0.0;
         double cambio = recibido - total;
         lblCambio.setText("Cambio: $" + String.format("%.2f", Math.max(0, cambio)));

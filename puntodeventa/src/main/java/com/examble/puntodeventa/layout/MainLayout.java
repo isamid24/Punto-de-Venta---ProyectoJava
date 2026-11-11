@@ -21,6 +21,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("Clientes", ClientesView.class, VaadinIcon.USER.create()));
         nav.addItem(new SideNavItem("Historial y Ventas", HistorialView.class, VaadinIcon.CLOCK.create()));
         nav.addItem(new SideNavItem("Reportes y Top 5", ReportesView.class, VaadinIcon.CHART_LINE.create()));
+        nav.addItem(new SideNavItem("Cierre de caja", CierreCajaView.class, VaadinIcon.MONEY_DEPOSIT.create()));
 
         Scroller scroller = new Scroller(nav);
         scroller.setClassName(LumoUtility.Padding.SMALL);

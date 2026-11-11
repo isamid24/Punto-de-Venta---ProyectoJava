@@ -30,7 +30,7 @@ public class ProductosView extends VerticalLayout {
 
     private Grid<Productos> grid = new Grid<>(Productos.class, false);
     private TextField txtFiltro = new TextField();
-    private TextField txtCodigo = new TextField("Codigo");
+    private TextField txtCodigo = new TextField("Código");
     private TextField txtNombre = new TextField("Nombre");
     private NumberField txtPrecio = new NumberField("Precio ($)");
     private NumberField txtStock= new NumberField("Stock Inicial");
