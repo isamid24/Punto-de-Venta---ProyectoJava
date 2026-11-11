@@ -125,7 +125,7 @@ public class ProductosView extends VerticalLayout {
                 return;
             }
 
-            // Valido que el  precio y stock sean mayores a cero
+            // Valido que el precio y stock sean mayores a cero
             if (txtPrecio.getValue() <= 0) {
                 Notification.show("El precio debe ser mayor a 0", 3000, Notification.Position.MIDDLE);
                 return;
