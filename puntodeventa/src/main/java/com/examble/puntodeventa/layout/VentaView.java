@@ -1,12 +1,14 @@
 package com.examble.puntodeventa.layout;
 
+import com.examble.puntodeventa.archivos.ArchivoClientes;
 import com.examble.puntodeventa.archivos.ArchivoProductos;
+import com.examble.puntodeventa.modelos.Clientes;
 import com.examble.puntodeventa.modelos.LineaVenta;
 import com.examble.puntodeventa.modelos.Productos;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -33,6 +35,7 @@ public class VentaView extends VerticalLayout {
 
     private NumberField numCantidad = new NumberField("Cantidad a vender");
     private NumberField numMontoRecibido = new NumberField("Monto recibido ($)");
+    private ComboBox<Clientes> comboCliente = new ComboBox<>("Cliente");
     private H3 lblTotal = new H3("Total: $0.00");
     private H3 lblCambio = new H3("Cambio: $0.00");
 
@@ -47,6 +50,8 @@ public class VentaView extends VerticalLayout {
         gridCatálogo.addColumn(Productos::getPrecio).setHeader("Precio ($)");
         gridCatálogo.addColumn(Productos::getStock).setHeader("Stock");
         gridCatálogo.setItems(productos);
+        gridCatálogo.setHeight("220px");
+        gridCarrito.setHeight("220px");
 
         numCantidad.setValue(1.0);
         numCantidad.setMin(1);
@@ -55,10 +60,15 @@ public class VentaView extends VerticalLayout {
         Button btnAgregar = new Button("Agregar al carrito", e -> agregarAlCarrito());
         btnAgregar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
+        HorizontalLayout formAgregar = new HorizontalLayout(numCantidad, btnAgregar);
+        formAgregar.setAlignItems(Alignment.END);
+
         VerticalLayout panelIzquierdo = new VerticalLayout(
-            new H2("Catálogo de Productos"),
+            new H3("Catálogo de Productos"),
             gridCatálogo,
-            new HorizontalLayout(numCantidad, btnAgregar)
+            formAgregar,
+            new H3("Carrito de Compra"),
+            gridCarrito
         );
         panelIzquierdo.setSizeFull();
 
@@ -76,9 +86,8 @@ public class VentaView extends VerticalLayout {
         btnCobrar.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         VerticalLayout panelDerecho = new VerticalLayout(
-            new H2("Carrito de Compras"),
-            gridCarrito,
-            btnQuitar,
+            new H3("Finalizar Transacción"),
+            comboCliente,
             lblTotal,
             numMontoRecibido,
             lblCambio,
@@ -92,6 +101,12 @@ public class VentaView extends VerticalLayout {
         splitLayout.setSplitterPosition(55);
 
         add(splitLayout);
+
+        List<Clientes> listaClientes = ArchivoClientes.cargarClientes();
+        comboCliente.setItems(listaClientes);
+        comboCliente.setItemLabelGenerator(c -> c.getNombre() + " (" + c.getCedula() + ")");
+        comboCliente.setPlaceholder("Seleccione o deje en blanco");
+        comboCliente.setClearButtonVisible(true);
 
     }
 
