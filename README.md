@@ -1,176 +1,181 @@
-# Punto de Venta (POS) - Barrio
+Sistema de Punto de Venta (POS) - Java, Spring Boot y Vaadin
 
-Sistema web de gestión comercial, control de inventario y punto de venta para negocios locales desarrollado en Java 21, Spring Boot y Vaadin 25.
+1. Descripcion General del Sistema
 
----
+El Sistema de Punto de Venta (POS) es una aplicacion web robusta desarrollada en Java 25 utilizando el framework Spring Boot para el entorno de servidor y Vaadin Flow para la interfaz de usuario web responsive. La aplicacion permite gestionar las operaciones fundamentales de un establecimiento comercial, incluyendo el control de inventario de productos, la administracion de clientes, el procesamiento de ventas en tiempo real con carrito dinámico, la generacion de reportes estadisticos y el arqueo diario de caja con impresion digital de tirilla POS e historial de cierres previos.
 
-## Índice
+Toda la informacion generada por la aplicacion se almacena de forma persistente en archivos de texto plano (.txt) mediante operaciones de entrada y salida en Java (Java I/O), evitando el uso de bases de datos relacionales externas y garantizando el cumplimiento estricto de los requerimientos de persistencia liviana.
 
-1. [Descripción del Proyecto](#descripción-del-proyecto)
-2. [Estado del Proyecto](#estado-del-proyecto)
-3. [Demostración de Funciones y Módulos](#demostración-de-funciones-y-módulos)
-4. [Componentes Investigados (Proyecto 8)](#componentes-investigados-proyecto-8)
-5. [Bonificación: Cierre de Caja Diario](#bonificación-cierre-de-caja-diario)
-6. [Acceso al Proyecto e Instalación](#acceso-al-proyecto-e-instalación)
-7. [Tecnologías Utilizadas](#tecnologías-utilizadas)
-8. [Estructura del Proyecto](#estructura-del-proyecto)
-9. [Personas Desarrolladoras del Proyecto](#personas-desarrolladoras-del-proyecto)
-10. [Licencia](#licencia)
+2. Modulos Principales y Funcionalidades
 
----
+2.1 Gestion de Productos (CRUD Completo)
 
-## Descripción del Proyecto
+Creacion: Registro de nuevos productos especificando codigo unico, nombre, precio unitario y cantidad en stock.
 
-El Punto de Venta (POS) - Barrio es una aplicación web diseñada para digitalizar la gestión comercial de negocios pequeños y medianos. Reemplaza los registros manuales por una interfaz centralizada donde se gestionan inventarios, información de clientes, ventas en carrito, cálculo de cambio en tiempo real, histórico de transacciones y analítica de negocio.
+Lectura: Visualizacion interactiva de todo el inventarios en grillas (Grid) con soporte para desplazamientos.
 
-El sistema está construido bajo una arquitectura orientada a componentes UI con Vaadin 25 y un esquema de persistencia en archivos planos de texto (`.txt`) utilizando campos delimitados por el carácter tubo (`|`). Esto garantiza la recuperación automática y durabilidad de los datos ante reinicios de la aplicación sin depender de motores de bases de datos relacionales externos.
+Actualizacion: Modificacion de precios, nombres o stock existente directamente desde la interfaz.
 
----
+Eliminacion: Borrado de productos con confirmacion previa mediante cuadros de dialogo flotantes (Dialog).
 
-## Estado del Proyecto
+2.2 Gestion de Clientes (CRUD Completo)
 
-El proyecto se encuentra finalizado, validado y en estado de producción para su correspondiente sustentación académica. Cumple con la totalidad de los requerimientos del Proyecto 8, los lineamientos del Núcleo Común y la implementación de la Bonificación (+0.5) correspondiente al Cierre de Caja Diario.
+Registro de Clientes: Captura de datos personales incluyendo cedula de ciudadania o NIT, nombre completo, telefono y correo electronico.
 
----
+Validacion de Documentos: Restriccion de duplicados y campos con formato numérico.
 
-## Demostración de Funciones y Módulos
+Consultas: Busqueda y actualizacion de datos de contacto de clientes registrados.
 
-### Módulo de Venta (Caja) (`/`)
-* Selección interactiva de productos del catálogo cargado en memoria.
-* Control estricto de disponibilidad de inventario (evita registrar ventas superiores al stock existente).
-* Modificación dinámica del carrito de compras con cálculo automático de subtotales y total general.
-* Columna de acción rápida en la grilla para eliminar renglones individuales del carrito.
-* Menú desplegable para vinculación opcional de cliente registrado o asignación automática a "Consumidor Final".
-* Validación del monto recibido frente al total a pagar con cálculo inmediato del cambio a entregar.
+2.3 Módulo de Ventas (Caja Registradora)
 
-### Módulo de Catálogo de Productos (`/productos`)
-* Gestión integral CRUD (Crear, Leer, Modificar y Eliminar productos).
-* Búsqueda en tiempo real mediante campo de texto (`txtBuscar`) que filtra por código o nombre.
-* Validaciones de entrada mediante patrones (código en formato `P` seguido de tres dígitos, precios y existencias numéricas positivas).
+Seleccion Dinamica: Seleccion de cliente mediante lista desplegable (ComboBox) y seleccion de productos.
 
-### Módulo de Gestión de Clientes (`/clientes`)
-* Formulario para registro y actualización de datos de clientes (Cédula, Nombre Completo y Teléfono).
-* Disposición simétrica a dos columnas alineada con el estándar visual del catálogo.
-* Búsqueda interactiva por número de documento o nombre.
-* Diálogo modal de confirmación (`Dialog`) previo a cualquier operación de borrado.
+Gestion de Carrito en Memoria: Uso de estructuras ArrayList para agregar, modificar o remover items antes de confirmar la compra.
 
-### Módulo de Historial de Ventas (`/historial`)
-* Consulta estructurada en grilla de todas las transacciones procesadas.
-* Exposición de ID de venta, fecha/hora, cédula del cliente asociado, total facturado, monto pagado y cambio generado.
+Calculos Automaticos: Calculo en tiempo real de subtotal, IVA, total a pagar y cambio a entregar segun el monto recibido.
 
-### Módulo de Cierre de Caja Diario (`/cierre-caja`)
-* Ingreso de datos de Base Inicial y Efectivo Físico Contado mediante componentes numéricos.
-* Sumatoria dinámica de las transacciones registradas durante la fecha en curso leyendo `ventas.txt`.
-* Cálculo del resultado del arqueo: `Total Esperado = Base Inicial + Ventas del Día`.
-* Clasificación condicional por color según el balance:
-  * Verde: Caja cuadrada (Diferencia igual a $0.00).
-  * Azul: Sobrante de dinero detectado.
-  * Rojo: Faltante de dinero detectado.
+Actualizacion Automatica de Inventario: Descuento inmediato de stock en productos.txt al concretar la venta.
 
-### Módulo de Reportes y Estadísticas (`/reportes`)
-* Indicadores ejecutivos en tarjetas visuales (`Card`) para Ventas del Día, Ventas del Mes y Producto Estrella.
-* Grilla de clasificación del Top 5 de productos más vendidos, ordenada descendentemente por rotación comercial.
+2.4 Reportes y Estadisticas
 
----
+Top 5 de Productos Mas Vendidos: Algoritmo de ordenamiento comparativo que calcula los 5 productos con mayor volumen de unidades vendidas.
 
-## Componentes Investigados (Proyecto 8)
+Tarjetas de Informacion (Cards): Metricas resumidas como el total de ingresos generados acumulados.
 
-| Componente | Descripción de Uso | Enlace a Documentación |
-| --- | --- | --- |
-| **`NumberField`** | Utilizado para la captura de cantidades en el carrito, ingreso del monto recibido en caja y montos de efectivo en el arqueo diario, restringiendo la entrada a valores estrictamente numéricos. | [Documentación de NumberField](https://vaadin.com/docs/latest/components/number-field) |
-| **`SplitLayout`** | Utilizado en la pantalla principal de caja para dividir la interfaz en dos páneles con barra deslizable (65% catálogo/carrito y 35% proceso de cobro). | [Documentación de SplitLayout](https://vaadin.com/docs/latest/components/split-layout) |
-| **`Card`** | Estructuración visual de contenedores en el módulo de reportes para presentar métricas clave de forma ejecutiva. | [Documentación de Layouts / Cards](https://vaadin.com/docs/latest/components/card) |
+2.5 Arqueo y Cierre de Caja (Modulo de Bonificacion)
 
----
+Calculo Automatico de Cuadre: Lectura automatica de ventas del dia actual sumadas a la base inicial para calcular el efectivo esperado.
 
-## Bonificación: Cierre de Caja Diario (+0.5)
+Estados de Caja: Clasificacion dinamica en CUADRADO, SOBRANTE o FALTANTE con indicadores de color en la interfaz.
 
-El sistema incorpora la funcionalidad completa de arqueo diario en la clase `CierreCajaView.java`. Esta vista procesa en tiempo real los registros guardados en `ventas.txt`, filtra las transacciones que coinciden con la fecha actual del sistema (`yyyy-MM-dd`), añade la base inicial declarada por el usuario y contrasta el total esperado frente al efectivo contado, notificando inmediatamente las diferencias en pantalla.
+Generacion de Tirilla POS (Modal): Despliegue de un comprobante digital estilizado tipo recibo termico dentro de un componente Dialog, con tipografia monoespaciada y bordes punteados.
 
----
+Cierre Rapido con X: Boton explícito de cierre con icono 'X' ubicado en la esquina superior derecha del modal.
 
-## Acceso al Proyecto e Instalación
+Historial de Cierres Anteriores: Tabla interactiva cargada desde cierres.txt con buscador para consultar arqueos realizados en fechas pasadas.
 
-### Requisitos Previos
-* Java Development Kit (JDK) versión 21 o superior.
-* Apache Maven versión 3.9 o superior (o uso del ejecutable `mvnw` incluido).
-* Entorno de desarrollo compatible (Visual Studio Code, IntelliJ IDEA o Eclipse).
+3. Estructura Completa del Proyecto
 
-### Pasos para la Ejecución
-
-1. Clonar el repositorio remoto:
-   ```bash
-   git clone https://github.com/tu-usuario/proyecto-pos.git
-   cd proyecto-pos
-   ```
-
-2. Compilar la aplicación y ejecutar el servidor embebido:
-   * En sistemas Microsoft Windows:
-     ```cmd
-     .\mvnw.cmd spring-boot:run
-     ```
-   * En sistemas Linux / macOS:
-     ```bash
-     ./mvnw spring-boot:run
-     ```
-
-3. Acceder a la aplicación web:
-   Abrir un navegador e ingresar a la URL `http://localhost:8080`.
-
----
-
-## Tecnologías Utilizadas
-
-* **Lenguaje de Programación:** Java 21
-* **Framework Backend:** Spring Boot 3.x
-* **Framework Frontend / UI:** Vaadin 25 (Componentes de acceso gratuito)
-* **Persistencia de Datos:** Archivos de texto plano (`.txt`) mediante paquetes `java.io` (`BufferedReader`, `BufferedWriter`)
-* **Gestor de Dependencias:** Apache Maven
-
----
-
-## Estructura del Proyecto
-
-```text
-puntodeventa/
+punto-de-venta/
 ├── src/
 │   └── main/
 │       └── java/
-│           └── com/examble/puntodeventa/
-│               ├── archivos/
-│               │   ├── ArchivoClientes.java
-│               │   ├── ArchivoProductos.java
-│               │   └── ArchivoVentas.java
-│               ├── layout/
-│               │   ├── CierreCajaView.java
-│               │   ├── ClientesView.java
-│               │   ├── HistorialView.java
-│               │   ├── MainLayout.java
-│               │   ├── ProductosView.java
-│               │   ├── ReportesView.java
-│               │   └── VentaView.java
-│               └── modelos/
-│                   ├── CierreCaja.java
-│                   ├── Clientes.java
-│                   ├── LineaVenta.java
-│                   ├── Productos.java
-│                   └── Venta.java
-├── clientes.txt
-├── productos.txt
-├── ventas.txt
-└── pom.xml
-```
+│           └── com/
+│               └── examble/
+│                   └── puntodeventa/
+│                       ├── PuntodeventaApplication.java   # Clase principal de entrada Spring Boot
+│                       ├── archivos/                      # Capa de Persistencia (Lectura y Escritura I/O)
+│                       │   ├── ArchivoClientes.java
+│                       │   ├── ArchivoProductos.java
+│                       │   ├── ArchivoVentas.java
+│                       │   └── ArchivoCierres.java        # Gestion de persistencia para arqueos de caja
+│                       ├── layout/                        # Capa de Interfaz de Usuario (Views de Vaadin)
+│                       │   ├── MainLayout.java            # Layout raiz con menu lateral de navegacion
+│                       │   ├── ProductosView.java         # Vista de administracion de productos
+│                       │   ├── ClientesView.java          # Vista de administracion de clientes
+│                       │   ├── VentaView.java             # Vista del punto de venta y carrito
+│                       │   ├── ReportesView.java          # Vista de estadisticas y Top 5
+│                       │   └── CierreCajaView.java        # Vista de arqueo, tirilla e historial de caja
+│                       └── modelos/                       # Capa de Entidades de Negocio (POJOs)
+│                           ├── Clientes.java
+│                           ├── Productos.java
+│                           ├── LineaVenta.java
+│                           ├── Venta.java
+│                           └── CierreCaja.java            # Modelo estructurado para registros de cuadre
+├── productos.txt                                          # Archivo plano de base de datos de productos
+├── clientes.txt                                           # Archivo plano de base de datos de clientes
+├── ventas.txt                                             # Archivo plano de historial de transacciones
+├── cierres.txt                                            # Archivo plano de historial de arqueos de caja
+└── pom.xml                                                # Configuracion de dependencias Maven
 
----
 
-## Personas Desarrolladoras del Proyecto
+4. Especificacion de Persistencia y Formato de Archivos Planos
 
-| Nombre | Rol | Carácter |
-| --- | --- | --- |
-| **Isabella Sánchez Posada** | Desarrolladora Única | Trabajo Individual |
+Los datos son almacenados en la raiz del proyecto utilizando la barra vertical (|) como delimitador de campos:
 
----
+productos.txt
 
-## Licencia
+Formato: codigo|nombre|precio|stock
 
-Este proyecto se distribuye bajo los términos de la Licencia MIT. Desarrollado como entrega académica individual para la asignatura de Lógica de Programación / Aplicaciones Web con Vaadin.
+Ejemplo: PROD-01|Leche Entera 1L|4200.0|50
+
+clientes.txt
+
+Formato: cedula|nombre|telefono|email
+
+Ejemplo: 1017123456|Juan Perez|3001234567|juan@example.com
+
+ventas.txt
+
+Formato: idVenta|fechaHora|cedulaCliente|total|detalles
+
+Ejemplo: VEN-84920|2026-11-11 14:30:00|1017123456|12600.0|Leche Entera 1L x3
+
+cierres.txt
+
+Formato: idCierre|fechaHora|baseInicial|totalVentas|totalEsperado|efectivoContado|diferencia|estado
+
+Ejemplo: CIE-1024|2026-11-11 18:30:00|50000.0|125000.0|175000.0|175000.0|0.0|CUADRADO
+
+5. Requisitos del Sistema y Tecnologias Utilizadas
+
+Requisitos de Software
+
+Java Development Kit (JDK): Version 17 o superior.
+
+Gestor de Construccion: Maven 3.8+
+
+Entorno de Desarrollo Recomenado: Visual Studio Code o IntelliJ IDEA.
+
+Stack Tecnologico
+
+Lenguaje: Java 17
+
+Framework Backend: Spring Boot 3.x
+
+Framework Frontend UI: Vaadin Flow 24+
+
+Manejo de Colecciones: ArrayList, HashMap, Java Streams API
+
+Persistencia: Java File I/O (BufferedReader, BufferedWriter, FileReader, FileWriter)
+
+6. Instrucciones de Instalacion y Ejecucion
+
+Abrir la carpeta del proyecto en la terminal o IDE de preferencia.
+
+Verificar la presencia de los archivos de texto .txt en el directorio raiz del proyecto.
+
+Compilar el proyecto ejecutando el comando de Maven:
+
+mvn clean install
+
+
+Iniciar la aplicacion ejecutando la clase principal PuntodeventaApplication.java o mediante el comando:
+
+mvn spring-boot:run
+
+
+Abrir un navegador web e ingresar a la direccion local:
+
+http://localhost:8080
+
+
+7. Modulo de Cierre de Caja y Bonificacion Tecnica (0.5)
+
+El modulo CierreCajaView fue disenado para dar cumplimiento completo a las especificaciones requeridas para la bonificacion:
+
+Diseno en formato Tirilla: La tirilla POS se presenta en una ventana modal (Dialog) con configuracion CSS especifica (Courier New, fondo estilo papel de recibo #fdfbf7, bordes punteados y alineacion estructurada de totales y firmas).
+
+Boton de salida X: La tirilla incluye en su esquina superior derecha un boton con el icono de cierre (CLOSE) que ejecuta dialog.close() al ser presionado, permitiendo salir del comprobante en cualquier momento.
+
+Consulta de Cierres Anteriores: Se implementa un panel de historial con un Grid<CierreCaja> conectado al archivo cierres.txt y un filtro de busqueda en tiempo real que permite auditar arqueos realizados en fechas previas.
+
+8. Arquitectura de Software y Patrones Aplicados
+
+Separacion por Capas: El codigo esta dividido en las capas de modelos (entidades POJO), archivos (persistencia I/O) y layout (vistas e interfaz web).
+
+Herencia en UI: Las clases de vista extienden de contenedores de Vaadin como VerticalLayout.
+
+Programacion Orientada a Objetos (POO): Encapsulamiento de atributos, constructores parametrizados y metodos accesores (getters y setters).
+
+Manejo de Excepciones: Bloques try-catch para capturar errores de lectura y escritura de archivos (IOException), garantizando la estabilidad de la aplicacion.
